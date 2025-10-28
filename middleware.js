@@ -13,7 +13,7 @@ export async function middleware(req)
         const isAuth = !!user;
         const path = req.nextUrl.pathname;
         const publicRoutes = ['/login', '/signup'];
-        const privateRoutes = ['/', '/dashboard'];
+        const privateRoutes = ['/dashboard'];
 
         if(!isAuth && privateRoutes.includes(path))
         {
@@ -37,5 +37,5 @@ export async function middleware(req)
 }
 
 export const config = {
-    matcher : ['/', '/dashboard','/login','/signup']
+    matcher : ['/dashboard','/login','/signup']
 }
