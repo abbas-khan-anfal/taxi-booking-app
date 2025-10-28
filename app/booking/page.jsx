@@ -1,50 +1,48 @@
-'use client';
-import React from 'react';
-import LinkedTitles from '../components/BookingService/LinkedTitles';
-import RideDetails from '../components/BookingService/RideDetails';
-import ChooseVehicle from '../components/BookingService/ChooseVehicle';
-import ContactInfo from '../components/BookingService/ContactInfo';
-import ConfirmBooking from '../components/BookingService/ConfirmBooking';
-import { useSearchParams } from 'next/navigation';
-import Navbar from '../components/Navbar/Navbar';
-import Footer from '../components/Footer/Footer';
+"use client";
 
-function page() {
+import React, { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import Navbar from "../components/Navbar/Navbar";
+import Footer from "../components/Footer/Footer";
+import LinkedTitles from "../components/BookingService/LinkedTitles";
+import RideDetails from "../components/BookingService/RideDetails";
+import ChooseVehicle from "../components/BookingService/ChooseVehicle";
+import ContactInfo from "../components/BookingService/ContactInfo";
+import ConfirmBooking from "../components/BookingService/ConfirmBooking";
 
-    const searchParams = useSearchParams();
-    const currentKey = searchParams?.keys()?.next()?.value?.toString();
+// Separate component for using useSearchParams (must be inside Suspense)
+function BookingContent() {
+  const searchParams = useSearchParams();
+  const currentKey = searchParams?.keys()?.next()?.value?.toString();
 
   return (
-    <>
-    <Navbar/>
-    <section className='p-10'>
+    <section className="p-10">
+      <LinkedTitles />
 
-        <LinkedTitles/>
+      {!currentKey && <RideDetails />}
 
-        {
-            !currentKey && <RideDetails/>
-        }
+      {currentKey === "ride_details" && <RideDetails />}
 
-        {
-            currentKey === "ride_details" && <RideDetails/>
-        }
+      {currentKey === "choose_vehicle" && <ChooseVehicle />}
 
-        {
-            currentKey === "choose_vehicle" && <ChooseVehicle/>
-        }
+      {currentKey === "contact_info" && <ContactInfo />}
 
-        {
-            currentKey === "contact_info" && <ContactInfo/>
-        }
-
-        {
-            currentKey === "confirm_booking" && <ConfirmBooking/>
-        }
-
+      {currentKey === "confirm_booking" && <ConfirmBooking />}
     </section>
-    <Footer />
-    </>
-  )
+  );
 }
 
-export default page;
+export default function BookingPage() {
+  return (
+    <>
+      <Navbar />
+
+      {/* ✅ Suspense fixes build error on Vercel */}
+      <Suspense fallback={<p className="p-10 text-gray-600">Loading booking...</p>}>
+        <BookingContent />
+      </Suspense>
+
+      <Footer />
+    </>
+  );
+}
